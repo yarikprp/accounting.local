@@ -52,6 +52,7 @@
 import useVuelidate from "@vuelidate/core";
 import { email, required, minLength } from "@vuelidate/validators";
 import { computed, reactive } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
   name: "loginView",
@@ -62,7 +63,7 @@ export default {
     });
 
     const minPasswordLength = 6;
-
+    const router = useRouter();
     const rules = computed(() => ({
       email: { required, email },
       password: { required, minLength: minLength(minPasswordLength) },
@@ -73,6 +74,14 @@ export default {
     const submitHandler = () => {
       v$.value.$touch();
       if (v$.value.$invalid) return;
+
+      const formData = {
+        email: state.email,
+        password: state.password,
+      };
+      console.log(formData);
+
+      router.push("/");
     };
 
     return {
