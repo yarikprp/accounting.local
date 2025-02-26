@@ -90,6 +90,7 @@ import useVuelidate from "@vuelidate/core";
 import { email, required, minLength, helpers } from "@vuelidate/validators";
 import { reactive, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "registerView",
@@ -97,6 +98,7 @@ export default {
     const minPasswordLength = 6;
     const minNameLength = 2;
     const router = useRouter();
+    const toast = useToast();
 
     const state = reactive({
       email: "",
@@ -121,7 +123,10 @@ export default {
 
     const submitHandler = () => {
       v$.value.$touch();
-      if (v$.value.$invalid) return;
+      if (v$.value.$invalid) {
+        toast.error("Пожалуйста, исправьте ошибки в форме");
+        return;
+      }
 
       console.log("Регистрация успешна:", {
         email: state.email,
@@ -129,6 +134,7 @@ export default {
         name: state.name,
       });
 
+      toast.error("Пожалуйста, исправьте ошибки в форме");
       router.push("/");
     };
 

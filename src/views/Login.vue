@@ -51,8 +51,9 @@
 <script>
 import useVuelidate from "@vuelidate/core";
 import { email, required, minLength } from "@vuelidate/validators";
-import { computed, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { computed, reactive, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router"; // Здесь импортируем useRoute и useRouter
+import { useToast } from "vue-toastification";
 
 export default {
   name: "loginView",
@@ -64,6 +65,9 @@ export default {
 
     const minPasswordLength = 6;
     const router = useRouter();
+    const route = useRoute(); // Правильный способ использовать route
+    const toast = useToast();
+
     const rules = computed(() => ({
       email: { required, email },
       password: { required, minLength: minLength(minPasswordLength) },
@@ -73,16 +77,26 @@ export default {
 
     const submitHandler = () => {
       v$.value.$touch();
-      if (v$.value.$invalid) return;
+      if (v$.value.$invalid) {
+        toast.error("Пожалуйста, исправьте ошибки в форме");
+        return;
+      }
 
       const formData = {
         email: state.email,
         password: state.password,
       };
-      console.log(formData);
 
+      console.log(formData);
+      toast.success("Вы успешно вошли в систему!");
       router.push("/");
     };
+
+    onMounted(() => {
+      if (route.query.message === "logout") {
+        toast.success("Вы успешно вышли из системы!");
+      }
+    });
 
     return {
       state,
