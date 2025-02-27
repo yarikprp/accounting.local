@@ -7,5 +7,8 @@ export default {
       const auth = getAuth(firebaseApp);
       await signInWithEmailAndPassword(auth, email, password);
     },
+    async logout() {
+      await firebaseApp.auth().signOut();
+    },
   },
 };

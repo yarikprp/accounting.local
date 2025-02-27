@@ -54,7 +54,7 @@ import { email, required, minLength } from "@vuelidate/validators";
 import { computed, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useStore } from "vuex"; // Импортируем useStore для доступа к Vuex
+import { useStore } from "vuex";
 
 export default {
   name: "loginView",
@@ -97,7 +97,9 @@ export default {
         toast.error("Ошибка входа: " + e.message);
       }
     };
-
+    const logout = async () => {
+      await store.dispatch("logout");
+    };
     onMounted(() => {
       if (route.query.message === "logout") {
         toast.success("Вы успешно вышли из системы!");
@@ -109,6 +111,7 @@ export default {
       v$,
       submitHandler,
       minPasswordLength,
+      logout,
     };
   },
 };
