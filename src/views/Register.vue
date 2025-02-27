@@ -91,6 +91,7 @@ import { email, required, minLength, helpers } from "@vuelidate/validators";
 import { reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+import { useStore } from "vuex";
 
 export default {
   name: "registerView",
@@ -99,6 +100,7 @@ export default {
     const minNameLength = 2;
     const router = useRouter();
     const toast = useToast();
+    const store = useStore();
 
     const state = reactive({
       email: "",
@@ -121,21 +123,27 @@ export default {
 
     const v$ = useVuelidate(rules, state);
 
-    const submitHandler = () => {
+    const submitHandler = async () => {
       v$.value.$touch();
       if (v$.value.$invalid) {
         toast.error("Пожалуйста, исправьте ошибки в форме");
         return;
       }
 
-      console.log("Регистрация успешна:", {
+      const formData = {
         email: state.email,
         password: state.password,
         name: state.name,
-      });
+      };
 
-      toast.error("Пожалуйста, исправьте ошибки в форме");
-      router.push("/");
+      try {
+        await store.dispatch("register", formData);
+        toast.success("Вы успешно вошли в систему!");
+        router.push("/");
+      } catch (e) {
+        toast.error("Пожалуйста, исправьте ошибки в форме");
+        toast.error("Ошибка входа: " + e.message);
+      }
     };
 
     return {
