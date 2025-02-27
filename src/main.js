@@ -6,6 +6,7 @@ import store from "./store";
 import "materialize-css/dist/js/materialize.min";
 import dateFilter from "./filters/formatDate";
 import Toast, { POSITION } from "vue-toastification";
+import Loader from "./components/app/Loader.vue";
 import "vue-toastification/dist/index.css";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -29,6 +30,7 @@ onAuthStateChanged(auth, () => {
 
   app.use(store);
   app.use(router);
+  app.use(Loader);
   app.use(Toast, {
     position: POSITION.TOP_RIGHT,
     timeout: 3000,
