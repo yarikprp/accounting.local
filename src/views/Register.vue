@@ -71,9 +71,16 @@
 
     <div class="card-action">
       <div>
-        <button class="btn waves-effect waves-light auth-submit" type="submit">
-          Зарегистрироваться
-          <i class="material-icons right">send</i>
+        <button
+          class="btn waves-effect waves-light auth-submit"
+          type="submit"
+          :disabled="isSubmitting"
+        >
+          <span v-if="isSubmitting">Загрузка...</span>
+          <span v-else>
+            Зарегистрироваться
+            <i class="material-icons right">send</i>
+          </span>
         </button>
       </div>
 
@@ -88,7 +95,7 @@
 <script>
 import useVuelidate from "@vuelidate/core";
 import { email, required, minLength, helpers } from "@vuelidate/validators";
-import { reactive, computed } from "vue";
+import { reactive, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "vuex";
@@ -102,6 +109,7 @@ export default {
     const router = useRouter();
     const toast = useToast();
     const store = useStore();
+    const isSubmitting = ref(false);
 
     const state = reactive({
       email: "",
@@ -131,6 +139,9 @@ export default {
         return;
       }
 
+      if (isSubmitting.value) return;
+      isSubmitting.value = true;
+
       const formData = {
         email: state.email,
         password: state.password,
@@ -143,14 +154,18 @@ export default {
         router.push("/");
       } catch (e) {
         toast.error(getFirebaseErrorMessage(e.code));
+      } finally {
+        isSubmitting.value = false;
       }
     };
+
     return {
       state,
       v$,
       submitHandler,
       minPasswordLength,
       minNameLength,
+      isSubmitting,
     };
   },
 };

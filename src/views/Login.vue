@@ -36,9 +36,16 @@
       </div>
     </div>
     <div class="card-action">
-      <button class="btn waves-effect waves-light auth-submit" type="submit">
-        Войти
-        <i class="material-icons right">send</i>
+      <button
+        class="btn waves-effect waves-light auth-submit"
+        type="submit"
+        :disabled="isSubmitting"
+      >
+        <span v-if="isSubmitting">Загрузка...</span>
+        <span v-else>
+          Войти
+          <i class="material-icons right">send</i>
+        </span>
       </button>
       <p class="center">
         Нет аккаунта?
@@ -51,7 +58,7 @@
 <script>
 import useVuelidate from "@vuelidate/core";
 import { email, required, minLength } from "@vuelidate/validators";
-import { computed, reactive, onMounted } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "vuex";
@@ -70,6 +77,7 @@ export default {
     const route = useRoute();
     const toast = useToast();
     const store = useStore();
+    const isSubmitting = ref(false);
 
     const rules = computed(() => ({
       email: { required, email },
@@ -85,6 +93,9 @@ export default {
         return;
       }
 
+      if (isSubmitting.value) return;
+      isSubmitting.value = true;
+
       const formData = {
         email: state.email,
         password: state.password,
@@ -96,11 +107,15 @@ export default {
         router.push("/");
       } catch (e) {
         toast.error(getFirebaseErrorMessage(e.code));
+      } finally {
+        isSubmitting.value = false;
       }
     };
+
     const logout = async () => {
       await store.dispatch("logout");
     };
+
     onMounted(() => {
       if (route.query.message === "logout") {
         toast.success("Вы успешно вышли из системы!");
@@ -112,6 +127,7 @@ export default {
       v$,
       submitHandler,
       minPasswordLength,
+      isSubmitting,
       logout,
     };
   },
