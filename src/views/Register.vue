@@ -92,6 +92,7 @@ import { reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "vuex";
+import { getFirebaseErrorMessage } from "@/utils/firebaseErrors";
 
 export default {
   name: "registerView",
@@ -138,14 +139,12 @@ export default {
 
       try {
         await store.dispatch("register", formData);
-        toast.success("Вы успешно вошли в систему!");
+        toast.success("Вы успешно зарегистрированы!");
         router.push("/");
       } catch (e) {
-        toast.error("Пожалуйста, исправьте ошибки в форме");
-        toast.error("Ошибка входа: " + e.message);
+        toast.error(getFirebaseErrorMessage(e.code));
       }
     };
-
     return {
       state,
       v$,

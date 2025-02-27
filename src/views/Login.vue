@@ -55,6 +55,7 @@ import { computed, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useStore } from "vuex";
+import { getFirebaseErrorMessage } from "@/utils/firebaseErrors";
 
 export default {
   name: "loginView",
@@ -94,7 +95,7 @@ export default {
         toast.success("Вы успешно вошли в систему!");
         router.push("/");
       } catch (e) {
-        toast.error("Ошибка входа: " + e.message);
+        toast.error(getFirebaseErrorMessage(e.code));
       }
     };
     const logout = async () => {
